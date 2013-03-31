@@ -36,7 +36,7 @@ end
 # By considering the terms in the Fibonacci sequence whose values do not exceed four million, find 
 # the sum of the even-valued terms.
 
-# First find the fibonacci sequence up to 4 million
+# Find the fibonacci sequence up to any number
 def find_fibs num
   fibs = Array.new
   first = 0
@@ -46,11 +46,7 @@ def find_fibs num
     i = first + second
     first = second
     second = i
-    if i <= num
-      fibs << i
-    else
-      #return fibs
-    end
+    fibs << i if i <= num
   end
   return fibs
 end
@@ -86,13 +82,14 @@ def is_factor num
   results     
 end
 
-# this is the best method yet for finding a prime!
+# this is the best method yet for finding a prime
 def is_prime? num
   (2...num).each { |i| return false if (num % i == 0) } 
   return true
 end
 
 # now solve problem #3
+# this method works for smaller sample data but times out for big number
 def euler_3 num
   factors = is_factor(num)
   primes = Array.new
@@ -101,9 +98,27 @@ def euler_3 num
       primes << factors[i]
     end
   end
-  return primes[primes.length-1]
+  return primes.last
 end
 
+# better solution to #3 that returns within a reasonable timeframe
+# returns 6857 
+def other_euler_3 num
+  #n = 600_851_475_143
+  primes = []
+  product_sum = 1
+  x = 2 # 2 is the first prime number
+   
+  # big time saver seems to be determining the factors and primes in one go
+  while product_sum < num
+    if num % x == 0 && is_prime?(x) 
+      primes << x
+      product_sum *= x
+    end
+    x += 1
+  end  
+  return primes.last
+end
 
 # Euler problem #4: A palindromic number reads the same both ways. 
 # The largest palindrome made from the product of two 2-digit numbers is 9009 = 91 99.
@@ -220,8 +235,6 @@ def euler_7 (num_start, num_end, ind)
   (num_start..num_end).each do |i| 
     count += 1 if is_prime?(i)
     if count == (ind + 1)
-      puts "here's prime " + i.to_s
-      puts "here's ind: " + ind.to_s
       return i
     end
   end
@@ -232,37 +245,86 @@ end
 def euler_8
 end
 
-# Euler problem #9: A Pythagorean triplet is a set of three natural numbers, a  b  c, for which,
+# Euler problem #9: A Pythagorean triplet is a set of three natural numbers, a < b < c, for which,
 
 # a2 + b2 = c2
-# For example, 3^2 + 4^2 = 9 + 16 = 25 = 52.
+# For example, 3^2 + 4^2 = 9 + 16 = 25 = 5^2.
 
 # There exists exactly one Pythagorean triplet for which a + b + c = 1000.
 # Find the product abc.
-def euler_9
+
+# first find the one pythagorean triplet
+# got 200, 375, 425
+def find_pyth_triplet num
+  (1...num).each do |i|
+    (1...num).each do |j|
+      (1...num).each do |k|
+        if ((i*i) + (j*j) == (k*k)) && i < j && j < k
+          if i + j + k == num && i < j && j < k
+            puts "here's a: " + i.to_s
+            puts "here's b: " + j.to_s
+            puts "here's c: " + k.to_s
+          end
+        end
+      end
+    end
+  end
+end
+
+# get 31875000, the right answer
+def euler_9( a, b, c)
+  return a * b * c
 end
 
 
 # Euler problem #10: The sum of the primes below 10 is 2 + 3 + 5 + 7 = 17.
 
 # Find the sum of all the primes below two million.
-# use helpers find_sums(#) and is_prime?(#)
-def euler_10 upto
-  # first create an array of the primes below any number
-  primes = Array.new
-  (1...upto).each do |i|
-    primes << i if is_prime?(i)
+# use helper is_prime?(#)
+# got 142913828922, the right answer, but it took several hours to execute
+def euler_10( upto )
+  sum = 0
+  (2...upto).each do |i|
+    # this is a rather haphazard way of speeding things up a bit
+    # in retrospect a lot more if statements may have been even better
+    if (i % 10 != 0) && (i % 20 != 0) && (i % 30 != 0) && (i % 50 != 0)
+      sum += i if is_prime?(i)
+    end
   end
-  # then add em up
-  return find_sum(primes)
+  return sum
 end
 
 # Euler problem #11: What is the greatest product of four adjacent numbers in the 
-# same direction (up, down, left, right, or diagonally) in the 2020 grid?
+# same direction (up, down, left, right, or diagonally) in the 20x20 grid?
 def make_matrix
   data = File.new("number_matrix").to_a
+  nums = []
+  nums = data[0].split(' ')
+  puts nums
   
   (0...data.length).each do |i|
     puts data[i]
   end
+end
+
+# Euler problem #16: 2^15 = 32768. The sum of the digits is 3 + 2 + 7 + 6 + 8 = 26
+# What is the sum of the digits of the number 2^1000?
+
+# returns an int array from the nth power of a number
+def make_array( power, num )
+  str_nums = []
+  nums = []
+  newnum = num**power
+  str_nums = newnum.to_s.split('')
+  (0...str_nums.length).each do |i|
+    nums << str_nums[i].to_i 
+  end
+  return nums
+end
+
+# got 1366, the right answer
+def euler_16( power, num )
+  nums = []
+  nums = make_array( power, num )
+  return find_sum(nums)
 end
