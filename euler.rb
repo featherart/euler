@@ -242,7 +242,27 @@ end
 
 # Euler problem #8: Find the greatest product of five consecutive digits in the 
 # 1000-digit number. (number omitted for sanity reasons)
-def euler_8
+# got 40824, the right answer
+def euler_8 
+  old_prod = 0
+  new_prod = 0
+  
+  # First get the big-ass number and make it into an Array
+  # each line will be an element in the new Array
+  data = File.new("number_series").to_a
+  # then break that into Arrays so you can loop through all the digits
+  data_line = []
+
+  (0..data.length).each do |i|
+    data_line = data[i].to_s.chomp.split("")
+    (0..data_line.length).each do |j|
+      old_prod = (data_line[j].to_i * data_line[j+1].to_i * data_line[j+2].to_i * data_line[j+3].to_i * data_line[j+4].to_i)
+      if old_prod >= new_prod
+        new_prod = old_prod
+      end
+    end   
+  end
+  puts "here's the answer: " + new_prod.to_s
 end
 
 # Euler problem #9: A Pythagorean triplet is a set of three natural numbers, a < b < c, for which,
