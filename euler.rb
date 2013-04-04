@@ -318,13 +318,42 @@ end
 # same direction (up, down, left, right, or diagonally) in the 20x20 grid?
 def make_matrix
   data = File.new("number_matrix").to_a
-  nums = []
-  nums = data[0].split(' ')
-  puts nums
-  
+ 
+  matrix = (0...data.length).map{[]}
+  # make an Array of Arrays
   (0...data.length).each do |i|
-    puts data[i]
+    matrix[i] = data[i].to_s.split(' ').map { |num| num.to_i  }
   end
+  #puts matrix.inspect
+  return matrix
+end
+
+# Got 70600674
+def euler_11
+  matrix = (0...20).map{[]}
+  matrix = make_matrix
+  horiz_prod = 0 
+  vert_prod = 0 
+  diag_prod1 = 0 
+  diag_prod2 = 0
+  answers = []
+
+  (0...17).each do |i|
+    (0...17).each do |j|
+      # first check horizontally
+      horiz_prod = matrix[i][j].to_i * matrix[i][j+1].to_i * matrix[i][j+2].to_i * matrix[i][j+3].to_i
+      answers << horiz_prod
+      # then vertically
+      vert_prod = matrix[i][j].to_i * matrix[i+1][j].to_i * matrix[i+2][j].to_i * matrix[i+3][j].to_i
+      answers << vert_prod
+      # then diagonally
+      diag_prod1 = matrix[i][j].to_i * matrix[i+1][j+1].to_i * matrix[i+2][j+2].to_i * matrix[i+3][j+3].to_i
+      #answers << diag_prod1
+      diag_prod2 = matrix[i+3][j].to_i * matrix[i+2][j+1].to_i * matrix[i+1][j+2].to_i * matrix[i][j+3].to_i
+      answers << diag_prod2
+    end
+  end
+  puts answers.max
 end
 
 # Euler problem #16: 2^15 = 32768. The sum of the digits is 3 + 2 + 7 + 6 + 8 = 26
